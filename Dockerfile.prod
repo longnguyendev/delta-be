@@ -1,40 +1,29 @@
-# Build stage
-FROM node:22-alpine AS build
-RUN apk update && apk add --no-cache build-base gcc autoconf automake zlib-dev libpng-dev bash vips-dev git > /dev/null 2>&1
+# Creating multi-stage build for production
+FROM node:20-alpine as build
+RUN apk update && apk add --no-cache build-base gcc autoconf automake zlib-dev libpng-dev vips-dev > /dev/null 2>&1
+ARG NODE_ENV=production
+ENV NODE_ENV=${NODE_ENV}
 
 WORKDIR /opt/
-COPY package.json package-lock.json ./
-RUN npm install -g node-gyp
-RUN npm config set fetch-retry-maxtimeout 600000 -g && npm ci
-ENV PATH=/opt/node_modules/.bin:$PATH
-
+COPY package.json yarn.lock ./
+RUN yarn config set network-timeout 600000 -g && yarn install --production
+ENV PATH /opt/node_modules/.bin:$PATH
 WORKDIR /opt/app
 COPY . .
-# Uncomment the following lines to pin the admin panel URL at build time.
-# Without them the admin panel calls the origin it is served from, which is
-# what you want behind a proxy; pin it only when the admin is served from a
-# different origin than the API.
-# ARG STRAPI_ADMIN_BACKEND_URL
-# ENV STRAPI_ADMIN_BACKEND_URL=${STRAPI_ADMIN_BACKEND_URL}
-ENV NODE_ENV=production
-RUN npm run build
+RUN yarn build
 
-# Production stage
-FROM node:22-alpine
+# Creating final production image
+FROM node:20-alpine
 RUN apk add --no-cache vips-dev
-ENV NODE_ENV=production
-
+ARG NODE_ENV=production
+ENV NODE_ENV=${NODE_ENV}
 WORKDIR /opt/
-COPY --from=build /opt/package.json /opt/package-lock.json ./
-RUN npm ci --omit=dev && npm cache clean --force  # --omit=dev replaces the deprecated --only=production
-ENV PATH=/opt/node_modules/.bin:$PATH
-
+COPY --from=build /opt/node_modules ./node_modules
 WORKDIR /opt/app
 COPY --from=build /opt/app ./
+ENV PATH /opt/node_modules/.bin:$PATH
 
 RUN chown -R node:node /opt/app
 USER node
 EXPOSE 1337
-HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-  CMD wget --quiet --tries=1 --spider http://localhost:1337/_health || exit 1
-CMD ["npm", "run", "start"]
+CMD ["yarn", "start"]
