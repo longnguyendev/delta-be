@@ -1,0 +1,58 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.GHCR_PAT }}
+          registry: ghcr.io
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile.prod
+          push: true
+          tags: ghcr.io/${{ secrets.USERNAME }}/${{ secrets.DOCKER_IMAGE }}:latest
+  deploy-to-vps:
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    steps:
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.VPS_PORT }}
+          script: |
+            # Đăng nhập vào GitHub Container Registry
+            docker login ghcr.io -u ${{ secrets.USERNAME }} -p ${{ secrets.GHCR_PAT }}
+
+            # Kéo image mới nhất từ GHCR
+            docker pull ghcr.io/${{ secrets.USERNAME }}/${{ secrets.DOCKER_IMAGE }}:latest
+
+            # Di chuyển vào thư mục dự án và restart container
+            cd ${{ secrets.VPS_PATH }}/
+            docker compose down  # Dừng các container đang chạy
+            docker compose up -d  # Khởi động lại các container mới
+
+            # Dọn dẹp các image không sử dụng
+            docker image prune -a -f
