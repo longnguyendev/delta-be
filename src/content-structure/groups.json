@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "sections": {
+    "collectionTypes": {
+      "groups": [
+        {
+          "parent": null,
+          "name": "relations",
+          "id": "grp_8327a45bc8f34c05a4eda674",
+          "children": [
+            {
+              "uid": "api::sector.sector",
+              "type": "contentType"
+            },
+            {
+              "uid": "api::project-category.project-category",
+              "type": "contentType"
+            },
+            {
+              "uid": "api::project-status.project-status",
+              "type": "contentType"
+            }
+          ]
+        }
+      ]
+    },
+    "singleTypes": {
+      "groups": []
+    }
+  }
+}

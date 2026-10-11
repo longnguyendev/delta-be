@@ -8,7 +8,7 @@
     "description": ""
   },
   "options": {
-    "draftAndPublish": true
+    "draftAndPublish": false
   },
   "pluginOptions": {
     "i18n": {
@@ -29,12 +29,14 @@
       "type": "media",
       "pluginOptions": {
         "i18n": {
-          "localized": true
+          "localized": false
         }
       },
       "multiple": false,
       "required": true,
-      "allowedTypes": ["files", "images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
     "description": {
       "type": "text",
@@ -43,6 +45,7 @@
           "localized": true
         }
       },
+      "maxLength": 150,
       "required": true
     },
     "slug": {
@@ -54,17 +57,6 @@
       },
       "targetField": "title",
       "required": true
-    },
-    "images": {
-      "type": "media",
-      "pluginOptions": {
-        "i18n": {
-          "localized": false
-        }
-      },
-      "multiple": true,
-      "required": true,
-      "allowedTypes": ["images", "files"]
     },
     "content": {
       "type": "customField",
@@ -78,6 +70,38 @@
         "preset": "defaultHtml"
       },
       "required": true
+    },
+    "location": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "delivery_date": {
+      "type": "date",
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      },
+      "required": false
+    },
+    "project_category": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::project-category.project-category"
+    },
+    "project_status": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::project-status.project-status"
+    },
+    "sector": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::sector.sector"
     }
   }
 }

@@ -35,8 +35,7 @@
       "multiple": false,
       "required": true,
       "allowedTypes": [
-        "images",
-        "files"
+        "images"
       ]
     },
     "service_items": {
@@ -52,6 +51,7 @@
           "localized": true
         }
       },
+      "maxLength": 150,
       "required": true
     }
   }
