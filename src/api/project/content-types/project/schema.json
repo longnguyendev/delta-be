@@ -88,15 +88,24 @@
       },
       "required": false
     },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "in_progress",
+        "handed_over"
+      ],
+      "default": "in_progress",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      }
+    },
     "project_category": {
       "type": "relation",
       "relation": "oneToOne",
       "target": "api::project-category.project-category"
-    },
-    "project_status": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::project-status.project-status"
     },
     "sector": {
       "type": "relation",
