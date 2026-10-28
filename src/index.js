@@ -24,14 +24,14 @@ module.exports = {
      * handed-over projects in the admin panel.
      */
     const missing = await strapi.db.query('api::project.project').findMany({
-      where: { status: { $null: true } },
+      where: { project_state: { $null: true } },
       select: ['id'],
     });
 
     for (const project of missing) {
       await strapi.db.query('api::project.project').update({
         where: { id: project.id },
-        data: { status: 'in_progress' },
+        data: { project_state: 'in_progress' },
       });
     }
 
