@@ -18,26 +18,35 @@ module.exports = {
    */
   async bootstrap({ strapi }) {
     /*
-     * The status enum is language-independent. Existing projects created before
-     * the field existed start with `null`, which would break the required enum
-     * in GraphQL. Give them the default value once; editors can then switch the
-     * handed-over projects in the admin panel.
+     * Những field mới thêm vào Project có thể còn null ở các bản ghi cũ.
+     * Enum project_state và các field bắt buộc (is_featured, priority) không
+     * được phép null trong GraphQL, nên gán giá trị mặc định một lần.
      */
-    const missing = await strapi.db.query('api::project.project').findMany({
-      where: { project_state: { $null: true } },
-      select: ['id'],
+    const projects = await strapi.db.query('api::project.project').findMany({
+      select: ['id', 'project_state', 'is_featured', 'priority'],
     });
 
-    for (const project of missing) {
-      await strapi.db.query('api::project.project').update({
-        where: { id: project.id },
-        data: { project_state: 'in_progress' },
-      });
+    let repaired = 0;
+
+    for (const project of projects) {
+      const data = {};
+
+      if (project.project_state == null) data.project_state = 'in_progress';
+      if (project.is_featured == null) data.is_featured = false;
+      if (project.priority == null) data.priority = 0;
+
+      if (Object.keys(data).length > 0) {
+        await strapi.db.query('api::project.project').update({
+          where: { id: project.id },
+          data,
+        });
+        repaired += 1;
+      }
     }
 
-    if (missing.length > 0) {
+    if (repaired > 0) {
       strapi.log.info(
-        `Set default status for ${missing.length} project record(s).`,
+        `Set default project fields for ${repaired} project record(s).`,
       );
     }
   },

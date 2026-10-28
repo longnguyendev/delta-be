@@ -102,6 +102,27 @@
         }
       }
     },
+    "is_featured": {
+      "type": "boolean",
+      "default": false,
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      }
+    },
+    "priority": {
+      "type": "integer",
+      "default": 0,
+      "min": 0,
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      }
+    },
     "project_category": {
       "type": "relation",
       "relation": "oneToOne",

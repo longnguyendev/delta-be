@@ -4,19 +4,19 @@
     "collectionTypes": {
       "groups": [
         {
-          "parent": null,
-          "name": "relations",
-          "id": "grp_8327a45bc8f34c05a4eda674",
           "children": [
             {
-              "uid": "api::sector.sector",
-              "type": "contentType"
+              "type": "contentType",
+              "uid": "api::sector.sector"
             },
             {
-              "uid": "api::project-category.project-category",
-              "type": "contentType"
+              "type": "contentType",
+              "uid": "api::project-category.project-category"
             }
-          ]
+          ],
+          "parent": null,
+          "name": "relations",
+          "id": "grp_8327a45bc8f34c05a4eda674"
         }
       ]
     },

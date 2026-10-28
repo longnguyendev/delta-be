@@ -7,7 +7,7 @@
     "displayName": "Lĩnh Vực"
   },
   "options": {
-    "draftAndPublish": true
+    "draftAndPublish": false
   },
   "pluginOptions": {
     "i18n": {
