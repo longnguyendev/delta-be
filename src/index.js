@@ -1,5 +1,7 @@
 'use strict';
 
+const ensureFrontendWebhook = require('./frontend-webhook');
+
 module.exports = {
   /**
    * An asynchronous register function that runs before
@@ -17,6 +19,10 @@ module.exports = {
    * run jobs, or perform some special logic.
    */
   async bootstrap({ strapi }) {
+    // Webhook that refreshes the Next.js frontend cache on content changes.
+    // Runs after Strapi loaded the saved webhooks, so the runner is ready.
+    await ensureFrontendWebhook(strapi);
+
     /*
      * Những field mới thêm vào Project có thể còn null ở các bản ghi cũ.
      * Enum project_state và các field bắt buộc (is_featured, priority) không
